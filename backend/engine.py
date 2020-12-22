@@ -1,15 +1,39 @@
+from .position import Position
+
 class Engine:
-  def __init__(self, height, radius, mass, max_thrust, max_fuel_consumption, fuel_ratio, min_throttle=0.6):
+  def __init__(self, height, radius, mass, max_thrust, max_fuel_consumption, fuel_ratio, min_throttle=0.6, max_gimbal=0.1):
     self.height = height
     self.radius = radius
     self.max_thrust = max_thrust
     self.max_fuel_consumption = max_fuel_consumption
+    self.max_gimbal = max_gimbal
     self.mass = mass
     self.fuel_ratio = fuel_ratio
     self.min_throttle = min_throttle
     self.oxygen_tanks = []
     self.fuel_tanks = []
     self.throttle = 0
+
+  def gimbal(self, curent_direction, wanted_direction):
+    direction_diff = Position()
+    direction_diff.x_vel = wanted_direction.x_norm - curent_direction.x_norm
+    direction_diff.y_vel = wanted_direction.y_norm - abs(curent_direction.y_norm)
+    direction_diff.z_vel = wanted_direction.z_norm - curent_direction.z_norm
+    direction_diff.norm()
+    if direction_diff.x_norm > self.max_gimbal:
+      x_gimb = self.max_gimbal
+    elif direction_diff.x_norm < -self.max_gimbal:
+      x_gimb = -self.max_gimbal
+    else:
+      x_gimb = direction_diff.x_norm
+    if direction_diff.z_norm > self.max_gimbal:
+      z_gimb = self.max_gimbal
+    elif direction_diff.z_norm < -self.max_gimbal:
+      z_gimb = -self.max_gimbal
+    else:
+      z_gimb = direction_diff.z_norm
+    y_gimb = 1 - abs(x_gimb) - abs(z_gimb)
+    return (x_gimb, y_gimb, z_gimb)
 
   def getFuel(self):
     total_oxygen = 0
@@ -31,7 +55,7 @@ class Engine:
 
   def burn(self, t_step):
     if self.throttle < self.min_throttle:
-      return
+      return 0
     fuel_consumption = self.throttle * self.max_fuel_consumption * t_step
     total_fuel, total_oxygen = self.getFuel()
     if (total_fuel >= fuel_consumption and

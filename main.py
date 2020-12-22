@@ -10,13 +10,12 @@ from backend.engine import Engine
 from backend.payload import Payload
 import numpy
 
-oxygen = Tank(1, 0.2, 0.01, 1)
-fuel = Tank(1, 0.2, 0.01, 0.5)
-engine = Engine(0.5, 0.2, 0.02, 30, 0.1, 3)
+oxygen = Tank(1, 0.2, 0.01, 6)
+fuel = Tank(1, 0.2, 0.01, 2)
+engine = Engine(0.5, 0.2, 0.02, 100, 0.1, 3)
 payload = Payload(1, 1, 'cone')
 
 rocket = Rocket(engine, [oxygen], [fuel], payload)
-rocket.throttle(1)
 
 def movement():
   if keys[key.DOWN]:
@@ -46,13 +45,44 @@ rocket_front = pyglet.sprite.Sprite(rocket_front, x=200, y=200, batch=batch)
 rocket_front.scale = rocket_height / rocket_front.height
 
 prev_x, prev_y = 0, 0
+rocket.direction.x_norm = 0.0
+rocket.direction.y_norm = 1.0
+rocket.position.norm()
+
+
 def update(dt):
-    window.clear()
-    batch.draw()
-    movement()
-    rocket_front.y = 200 + int(rocket.position[1]*10)
-    print(rocket.position[1])
-    rocket.burn(dt)
+  window.clear()
+  batch.draw()
+  movement()
+  if update.ascent:
+    rocket.throttle(1)
+    if rocket.position.y > 100:
+      update.ascent = False
+      rocket.throttle(0)
+  elif rocket.position.y < 100 and rocket.position.y > 20:
+      if rocket.position.y_vel < -10:
+        rocket.throttle(1)
+      else:
+        rocket.throttle(0)
+  elif rocket.position.y < 20 and rocket.position.y > 1:
+    if rocket.position.y_vel < -1:
+      rocket.throttle(0.6)
+    else:
+      rocket.throttle(0)
+  elif rocket.position.y < 1:
+    if rocket.position.y_vel < 0:
+      rocket.throttle(0.6)
+    else:
+      rocket.throttle(0)
+  rocket_front.x = 200 + int(rocket.position.x*10)
+  rocket_front.y = 200 + int(rocket.position.y*10)
+  rocket.burn(dt)
+  # rocket.printVelocity()
+  print(rocket.position.y)
+  if rocket.position.y < -5:
+    exit(0)
+
+update.ascent = True
 
 pyglet.clock.schedule_interval(update,1/60)
 pyglet.app.run()
