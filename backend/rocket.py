@@ -19,6 +19,7 @@ class Rocket:
       self.current_mass += tank.fuel_mass
       self.height += tank.height
     self.COM = self.height / 2
+    self.pos_delta = [0, 0, 0]
     self.position = [0, 0, 0]
     self.velocity = 0
     self.engine.oxygen_tanks = oxygen_tanks
@@ -28,7 +29,8 @@ class Rocket:
     self.current_mass = self.empty_mass
     for tank in self.oxygen_tanks + self.fuel_tanks:
       self.current_mass += tank.fuel_mass
-    self.position[2] += self.velocity * t_step
+    self.pos_delta[1] = self.velocity * t_step
+    self.position[1] += self.pos_delta[1]
 
   def burn(self, t_step):
     thrust = self.engine.burn(t_step)

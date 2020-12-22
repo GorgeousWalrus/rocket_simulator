@@ -50,8 +50,8 @@ def update(dt):
     window.clear()
     batch.draw()
     movement()
-    rocket_front.y = 200 + int(rocket.position[2]*10)
-    print(rocket.position[2])
+    rocket_front.y = 200 + int(rocket.position[1]*10)
+    print(rocket.position[1])
     rocket.burn(dt)
 
 pyglet.clock.schedule_interval(update,1/60)
