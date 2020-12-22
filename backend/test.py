@@ -1,8 +1,8 @@
-from rocket import Rocket
-from tank import Tank
-from engine import Engine
-from payload import Payload
-import numpy 
+from .rocket import Rocket
+from .tank import Tank
+from .engine import Engine
+from .payload import Payload
+import numpy
 
 oxygen = Tank(1, 0.2, 0.01, 6)
 fuel = Tank(1, 0.2, 0.01, 2)

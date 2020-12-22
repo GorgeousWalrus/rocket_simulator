@@ -1,6 +1,6 @@
-from engine import Engine
-from tank import Tank
-from payload import Payload
+from .engine import Engine
+from .tank import Tank
+from .payload import Payload
 
 class Rocket:
 
@@ -28,13 +28,13 @@ class Rocket:
     self.current_mass = self.empty_mass
     for tank in self.oxygen_tanks + self.fuel_tanks:
       self.current_mass += tank.fuel_mass
-    self.position[2] += self.velocity * t_step    
+    self.position[2] += self.velocity * t_step
 
   def burn(self, t_step):
     thrust = self.engine.burn(t_step)
     acceleration = thrust / self.current_mass - self.G
     self.velocity += acceleration*t_step
     self.update(t_step)
-    
+
   def throttle(self, throttle):
     self.engine.setThrottle(throttle)
