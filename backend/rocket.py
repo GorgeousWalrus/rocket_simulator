@@ -1,6 +1,6 @@
-from engine import Engine
-from tank import Tank
-from payload import Payload
+from .engine import Engine
+from .tank import Tank
+from .payload import Payload
 
 class Rocket:
 
